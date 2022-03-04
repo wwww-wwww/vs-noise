@@ -184,7 +184,7 @@ static void generate_seeds(AddNoiseData *const VS_RESTRICT d) noexcept {
   auto pns{d->pNoiseSeeds.begin()};
 
   for (auto plane{0}; plane < d->planesNoise; plane++) {
-    for (auto x{d->storedFrames / d->every}; x > 0; x--) {
+    for (auto x{d->storedFrames}; x > 0; x--) {
       *pns++ = LCG(d->idum); // insert seed, to keep cache happy
     }
   }
@@ -202,8 +202,9 @@ static void setRand(int &plane, int &noiseOffs, const int frameNumber,
     }
   } else {
     // pull seed back out, to keep cache happy
-    auto seedIndex{(frameNumber / d->every) % d->storedFrames};
-    auto p0{d->pNoiseSeeds[seedIndex]};
+    uint8_t seedIndex{
+        static_cast<uint8_t>((frameNumber / d->every) % d->storedFrames)};
+    uint64_t p0{d->pNoiseSeeds[seedIndex]};
 
     if (plane == 0) {
       d->idum = p0;
@@ -259,12 +260,11 @@ static void create_noise(int n, std::vector<std::vector<int8_t>> &planes,
     p[x] = x;
   }
 
-  int seedIndex;
-  uint64_t p0;
+  uint8_t seedIndex = 0;
   if (!d->constant) {
-    seedIndex = (n / d->every) % d->storedFrames;
-    p0 = d->pNoiseSeeds[seedIndex];
+    seedIndex = static_cast<uint8_t>((n / d->every) % d->storedFrames);
   }
+  uint64_t p0 = d->pNoiseSeeds[seedIndex];
 
   for (int i = 0; i < d->vi->format.numPlanes; i++) {
     if (d->constant) {
