@@ -249,6 +249,7 @@ static void updateFrame_c(const void *_srcp, void *_dstp, const int width,
   }
 }
 
+template <typename pix_fmt>
 static void create_noise(int n, std::vector<std::vector<int8_t>> &planes,
                          AddNoiseData *const VS_RESTRICT d) {
   const float pvar[]{d->var, d->uvar};
@@ -280,68 +281,22 @@ static void create_noise(int n, std::vector<std::vector<int8_t>> &planes,
       noisePlane = 1;
     }
 
+    planes[i].resize(d->nStride[noisePlane] * d->nHeight[noisePlane] *
+                     sizeof(pix_fmt));
+
     if (d->type == 1) {
-      void (*perlin_create_t)(void *, int, int, float, float, float,
-                              int[PERM_SIZE]);
-      if (d->vi->format.bytesPerSample == 1) {
-        planes[i].resize(d->nStride[noisePlane] * d->nHeight[noisePlane] *
-                         sizeof(int8_t));
-        perlin_create_t = perlin_create<int8_t>;
-      } else if (d->vi->format.bytesPerSample == 2) {
-        planes[i].resize(d->nStride[noisePlane] * d->nHeight[noisePlane] *
-                         sizeof(int16_t));
-        perlin_create_t = perlin_create<int16_t>;
-      } else {
-        planes[i].resize(d->nStride[noisePlane] * d->nHeight[noisePlane] *
-                         sizeof(float));
-        perlin_create_t = perlin_create<float>;
-      }
-
-      perlin_create_t((void *)planes[i].data(), d->nStride[noisePlane],
-                      d->nHeight[noisePlane], d->xsize, d->ysize,
-                      pvar[noisePlane] * d->scale, p);
+      perlin_create<pix_fmt>((void *)planes[i].data(), d->nStride[noisePlane],
+                             d->nHeight[noisePlane], d->xsize, d->ysize,
+                             pvar[noisePlane] * d->scale, p);
     } else if (d->type == 2) {
-      void (*simplex_create_t)(void *, int, int, float, float, float,
-                               int[PERM_SIZE]);
-      if (d->vi->format.bytesPerSample == 1) {
-        planes[i].resize(d->nStride[noisePlane] * d->nHeight[noisePlane] *
-                         sizeof(int8_t));
-        simplex_create_t = simplex_create<int8_t>;
-      } else if (d->vi->format.bytesPerSample == 2) {
-        planes[i].resize(d->nStride[noisePlane] * d->nHeight[noisePlane] *
-                         sizeof(int16_t));
-        simplex_create_t = simplex_create<int16_t>;
-      } else {
-        planes[i].resize(d->nStride[noisePlane] * d->nHeight[noisePlane] *
-                         sizeof(float));
-        simplex_create_t = simplex_create<float>;
-      }
-
-      simplex_create_t((void *)planes[i].data(), d->nStride[noisePlane],
-                       d->nHeight[noisePlane], d->xsize, d->ysize,
-                       pvar[noisePlane] * d->scale, p);
-
+      simplex_create<pix_fmt>((void *)planes[i].data(), d->nStride[noisePlane],
+                              d->nHeight[noisePlane], d->xsize, d->ysize,
+                              pvar[noisePlane] * d->scale, p);
     } else if (d->type == 3) {
-      void (*fractal_create_t)(void *, int, int, float, float, float,
-                               int p[PERM_SIZE], int, float, float, float,
-                               float);
-      if (d->vi->format.bytesPerSample == 1) {
-        planes[i].resize(d->nStride[noisePlane] * d->nHeight[noisePlane] *
-                         sizeof(int8_t));
-        fractal_create_t = fractal_create<int8_t>;
-      } else if (d->vi->format.bytesPerSample == 2) {
-        planes[i].resize(d->nStride[noisePlane] * d->nHeight[noisePlane] *
-                         sizeof(int16_t));
-        fractal_create_t = fractal_create<int16_t>;
-      } else {
-        planes[i].resize(d->nStride[noisePlane] * d->nHeight[noisePlane] *
-                         sizeof(float));
-        fractal_create_t = fractal_create<float>;
-      }
-
-      fractal_create_t((void *)planes[i].data(), d->nStride[noisePlane],
-                       d->nHeight[noisePlane], d->xsize, d->ysize,
-                       pvar[noisePlane] * d->scale, p, 5, 1.0, 1.0, 2.0, 0.5);
+      fractal_create<pix_fmt>((void *)planes[i].data(), d->nStride[noisePlane],
+                              d->nHeight[noisePlane], d->xsize, d->ysize,
+                              pvar[noisePlane] * d->scale, p, 5, 1.0, 1.0, 2.0,
+                              0.5);
     }
   }
 }
@@ -370,7 +325,13 @@ static const VSFrame *VS_CC addnoiseGetFrame(int n, int activationReason,
     if (d->constant || d->type == 0) {
       planes_ptr = &d->pN;
     } else {
-      create_noise(n, planes, d);
+      if (d->vi->format.bytesPerSample == 1) {
+        create_noise<int8_t>(n, planes, d);
+      } else if (d->vi->format.bytesPerSample == 2) {
+        create_noise<int16_t>(n, planes, d);
+      } else {
+        create_noise<float>(n, planes, d);
+      }
       planes_ptr = &planes;
     }
 
@@ -573,7 +534,13 @@ static void VS_CC addnoise_create(const VSMap *in, VSMap *out,
     } else {
       if (d->constant) {
         d->pN.resize(d->vi->format.numPlanes);
-        create_noise(0, d->pN, d.get());
+        if (d->vi->format.bytesPerSample == 1) {
+          create_noise<int8_t>(0, d->pN, d.get());
+        } else if (d->vi->format.bytesPerSample == 2) {
+          create_noise<int16_t>(0, d->pN, d.get());
+        } else {
+          create_noise<float>(0, d->pN, d.get());
+        }
       }
     }
   } catch (const char *error) {
