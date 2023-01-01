@@ -324,6 +324,8 @@ static const VSFrame *VS_CC addnoiseGetFrame(int n, int activationReason,
 
     if (d->constant || d->type == 0) {
       planes_ptr = &d->pN;
+    } else if (d->type == 4) {
+      d->generator.seed(d->idum + n);
     } else {
       if (d->vi->format.bytesPerSample == 1) {
         create_noise<int8_t>(n, planes, d);
@@ -363,6 +365,25 @@ static const VSFrame *VS_CC addnoiseGetFrame(int n, int activationReason,
           }
           void *pNW = planes_ptr->at(plane).data();
           d->updateFrame(srcp, dstp, width, height, stride, noisePlane, pNW, d);
+          break;
+        }
+        case 4: {
+          const float pvar[]{d->var, d->uvar};
+
+          auto noisePlane{d->vi->format.colorFamily == cfRGB ? 0 : plane};
+          if (noisePlane >= 2) {
+            noisePlane = 1;
+          }
+
+          if (d->vi->format.bytesPerSample == 1) {
+            poisson_apply<uint8_t>(srcp, dstp, d->generator, width, height,
+                                   stride, d->peak,
+                                   d->scale / pvar[noisePlane]);
+          } else if (d->vi->format.bytesPerSample == 2) {
+            poisson_apply<uint16_t>(srcp, dstp, d->generator, width, height,
+                                    stride, d->peak,
+                                    d->scale / pvar[noisePlane]);
+          }
           break;
         }
         default:
@@ -434,8 +455,8 @@ static void VS_CC addnoise_create(const VSMap *in, VSMap *out,
       throw "opt must be 0, 1, 2, 3, or 4";
     }
 
-    if (d->type < 0 || d->type > 3) {
-      throw "type must be 0, 1, 2, or 3";
+    if (d->type < 0 || d->type > 4) {
+      throw "type must be 0, 1, 2, 3, or 4";
     }
 
     if (d->vi->format.bytesPerSample == 1) {
@@ -444,6 +465,10 @@ static void VS_CC addnoise_create(const VSMap *in, VSMap *out,
       d->updateFrame = updateFrame_c<uint16_t, int16_t>;
     } else {
       d->updateFrame = updateFrame_c<float, float>;
+    }
+
+    if (d->type == 4 && d->constant) {
+      throw "can't be type for and constant";
     }
 
 #ifdef ADDGRAIN_X86

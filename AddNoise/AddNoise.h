@@ -11,6 +11,7 @@
 #include <random>
 
 #include "perlin.h"
+#include "poisson.h"
 #include "simplex.h"
 
 #ifdef ADDGRAIN_X86
@@ -52,6 +53,8 @@ struct AddNoiseData final {
   int peak;
   int step;
   int storedFrames;
+
+  std::default_random_engine generator;
 
   std::vector<uint64_t> pNoiseSeeds;
   std::vector<std::vector<int8_t>> pN;
