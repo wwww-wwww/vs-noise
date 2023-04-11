@@ -13,6 +13,10 @@ void poisson_apply(const void *_srcp, void *_dstp,
 
   for (auto y{0}; y < height; y++) {
     for (auto x{0}; x < width; x++) {
+      if (srcp[x] == 0) {
+        dstp[x] = 0;
+        continue;
+      }
       auto val = srcp[x] / scale;
       std::poisson_distribution<int> distribution(val);
       dstp[x] = static_cast<pixel_t>(
