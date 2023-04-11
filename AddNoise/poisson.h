@@ -13,10 +13,14 @@ void poisson_apply(const void *_srcp, void *_dstp,
 
   for (auto y{0}; y < height; y++) {
     for (auto x{0}; x < width; x++) {
-      auto val = srcp[x] / scale;
-      std::poisson_distribution<int> distribution(val);
-      dstp[x] = static_cast<pixel_t>(
-          std::clamp((int)(distribution(generator) * scale), 0, peak));
+      if (srcp[x] == 0) {
+        dstp[x] = 0;
+      } else {
+        auto val = srcp[x] / scale;
+        std::poisson_distribution<int> distribution(val);
+        dstp[x] = static_cast<pixel_t>(
+            std::clamp((int)(distribution(generator) * scale), 0, peak));
+      }
     }
 
     srcp += stride;
