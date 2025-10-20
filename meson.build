@@ -34,7 +34,6 @@ sources = [
 libs = []
 
 if host_machine.cpu_family().startswith('x86')
-  project_args = ['-DADDGRAIN_X86']
   if gcc_syntax
     project_args += ['-mfpmath=sse', '-msse2']
   endif

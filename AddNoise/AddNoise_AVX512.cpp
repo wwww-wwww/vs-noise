@@ -1,4 +1,4 @@
-#ifdef ADDGRAIN_X86
+#ifdef __x86_64__
 #include "AddNoise.h"
 
 template <typename pixel_t, typename noise_t>

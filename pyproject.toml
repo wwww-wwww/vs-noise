@@ -1,0 +1,10 @@
+[project]
+name = "vsnoise"
+version = "1"
+dependencies = ["vsauto"]
+
+[build-system]
+requires = ["setuptools"]
+
+[project.entry-points.vsauto]
+vsnoise = "vsnoise"

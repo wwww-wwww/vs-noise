@@ -35,7 +35,7 @@
 
 using namespace std::literals;
 
-#ifdef ADDGRAIN_X86
+#ifdef __x86_64__
 template <typename pixel_t, typename noise_t>
 extern void updateFrame_sse2(const void *_srcp, void *_dstp, const int width,
                              const int height, const ptrdiff_t stride,
@@ -471,7 +471,7 @@ static void VS_CC addnoise_create(const VSMap *in, VSMap *out,
       throw "can't be type for and constant";
     }
 
-#ifdef ADDGRAIN_X86
+#ifdef __x86_64__
     auto iset{instrset_detect()};
     if ((opt == 0 && iset >= 10) || opt == 4) {
       if (d->vi->format.bytesPerSample == 1) {

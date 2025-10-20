@@ -14,7 +14,7 @@
 #include "poisson.h"
 #include "simplex.h"
 
-#ifdef ADDGRAIN_X86
+#ifdef __x86_64__
 #include "VCL2/vectorclass.h"
 #endif
 

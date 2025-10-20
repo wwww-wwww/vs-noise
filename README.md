@@ -9,6 +9,12 @@ Original https://github.com/HomeOfVapourSynthEvolution/VapourSynth-AddGrain port
 | ![ref](https://user-images.githubusercontent.com/19401176/210160826-878052da-0dc8-43b5-a7f1-53e597adda15.png) | ![type=0](https://user-images.githubusercontent.com/19401176/210161449-b5fadbf4-3537-4328-8068-fc3502cbea85.png) | ![type=1](https://user-images.githubusercontent.com/19401176/210161447-fe07ec8d-f114-4a38-a33b-0a8996fddc05.png) | ![type=2](https://user-images.githubusercontent.com/19401176/210161446-caba39c8-e15b-42c1-97f5-4f842712c88e.png) | ![type=3](https://user-images.githubusercontent.com/19401176/210161445-bd6969cf-417d-4672-afaa-9f0cb20df7e2.png) | ![type=4](https://user-images.githubusercontent.com/19401176/210161444-74b52123-cc7e-4043-99c2-fc582899a5ca.png)
 
 
+## Installation
+
+`pip install vsnoise`
+
+Or [Releases](https://github.com/wwww-wwww/vs-noise/releases) for Windows builds
+
 ## Usage
     noise.Add(vnode clip[, int type=0, float var=1.0, float uvar=0.0, float hcorr=0.0, float vcorr=0.0, float xsize = 2.0, float ysize = 2.0, int seed=-1, int constant=False, int every=1, int opt=0])
 
