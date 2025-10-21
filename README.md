@@ -15,6 +15,17 @@ Original https://github.com/HomeOfVapourSynthEvolution/VapourSynth-AddGrain port
 
 Or [Releases](https://github.com/wwww-wwww/vs-noise/releases) for Windows builds
 
+If installed from pip, make sure to load it using vsauto
+
+    import vsauto
+    vsauto.load()
+
+Then it can be used normally
+
+    import vapoursynth as vs
+    vs.core.noise.Add(...)
+
+
 ## Usage
     noise.Add(vnode clip[, int type=0, float var=1.0, float uvar=0.0, float hcorr=0.0, float vcorr=0.0, float xsize = 2.0, float ysize = 2.0, int seed=-1, int constant=False, int every=1, int opt=0])
 
