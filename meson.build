@@ -35,7 +35,7 @@ libs = []
 
 if host_machine.cpu_family().startswith('x86')
   if gcc_syntax
-    project_args += ['-mfpmath=sse', '-msse2']
+    project_args = ['-mfpmath=sse', '-msse2']
   endif
   add_project_arguments(project_args, language: 'cpp')
 
