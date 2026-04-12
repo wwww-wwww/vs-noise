@@ -1,10 +1,21 @@
+[build-system]
+requires = ["hatchling", "packaging", "meson"]
+build-backend = "hatchling.build"
+
 [project]
 name = "vsnoise"
-version = "1"
-dependencies = ["vsauto"]
+version = "1.1"
+readme = "README.md"
+license-files = ["LICENSE"]
+dependencies = ["vapoursynth>=74"]
 
-[build-system]
-requires = ["setuptools"]
+[tool.hatch.build.targets.wheel]
+include = ["vapoursynth/plugins"]
+artifacts = [
+    "vapoursynth/plugins/*.dylib",
+    "vapoursynth/plugins/*.so",
+    "vapoursynth/plugins/*.dll",
+]
 
-[project.entry-points.vsauto]
-vsnoise = "vsnoise"
+[tool.hatch.build.targets.wheel.hooks.custom]
+path = "hatch_build.py"

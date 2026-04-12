@@ -15,11 +15,6 @@ Original https://github.com/HomeOfVapourSynthEvolution/VapourSynth-AddGrain port
 
 Or [Releases](https://github.com/wwww-wwww/vs-noise/releases) for Windows builds
 
-If installed from pip, make sure to load it using vsauto
-
-    import vsauto
-    vsauto.load()
-
 Then it can be used normally
 
     import vapoursynth as vs
