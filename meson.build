@@ -1,7 +1,7 @@
 project('AddNoise', 'cpp',
   default_options: ['buildtype=release', 'warning_level=2', 'b_lto=true', 'b_ndebug=if-release', 'cpp_std=c++17'],
   license: 'GPL-3.0-or-later',
-  meson_version: '>=0.51.0',
+  meson_version: '>=0.64.0',
   version: '1'
 )
 
@@ -13,13 +13,15 @@ if get_option('buildtype') == 'release'
   add_project_arguments(gcc_syntax ? ['-fno-math-errno', '-fno-trapping-math'] : '/GS-', language: 'cpp')
 endif
 
-if gcc_syntax
-  vapoursynth_dep = dependency('vapoursynth', version: '>=55').partial_dependency(compile_args: true, includes: true)
-  install_dir = vapoursynth_dep.get_variable(pkgconfig: 'libdir') / 'vapoursynth'
-else
-  vapoursynth_dep = []
-  install_dir = get_option('libdir') / 'vapoursynth'
-endif
+py = import('python').find_installation(pure: false)
+vapoursynth_incl = include_directories(
+  run_command(
+    py,
+    '-c',
+    'import vapoursynth as vs; print(vs.get_include())',
+    check: true,
+  ).stdout().strip()
+)
 
 sources = [
   'AddNoise/AddNoise.cpp',
@@ -67,21 +69,21 @@ if host_machine.cpu_family().startswith('x86')
 
   libs += static_library('avx2', 'AddNoise/AddNoise_AVX2.cpp',
     cpp_args: gcc_syntax ? ['-mavx2', '-mfma'] : '/arch:AVX2',
-    dependencies: vapoursynth_dep,
+    include_directories: vapoursynth_incl,
     gnu_symbol_visibility: 'hidden'
   )
 
   libs += static_library('avx512', 'AddNoise/AddNoise_AVX512.cpp',
     cpp_args: gcc_syntax ? ['-mavx512f', '-mavx512bw', '-mavx512dq', '-mavx512vl', '-mfma'] : '/arch:AVX512',
-    dependencies: vapoursynth_dep,
+    include_directories: vapoursynth_incl,
     gnu_symbol_visibility: 'hidden'
   )
 endif
 
 shared_module('addnoise', sources,
-  dependencies: vapoursynth_dep,
+  include_directories: vapoursynth_incl,
   link_with: libs,
   install: true,
-  install_dir: install_dir,
+  install_dir: py.get_install_dir() / 'vapoursynth/plugins',
   gnu_symbol_visibility: 'hidden'
 )
