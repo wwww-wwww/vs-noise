@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "vsnoise"
-version = "1.2"
+version = "1.2.1"
 readme = "README.md"
 license-files = ["LICENSE"]
 requires-python = ">=3.12"
