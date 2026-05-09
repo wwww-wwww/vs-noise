@@ -48,5 +48,5 @@ jobs:
 
       - uses: actions/upload-artifact@v7.0.1
         with:
-          name: vs-noise-wheels-${{ matrix.runs-on }}
+          name: wheels-${{ matrix.runner }}
           path: ./wheelhouse/*.whl
