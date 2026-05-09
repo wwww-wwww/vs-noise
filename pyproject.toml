@@ -7,6 +7,7 @@ name = "vsnoise"
 version = "1.2"
 readme = "README.md"
 license-files = ["LICENSE"]
+requires-python = ">=3.12"
 dependencies = ["vapoursynth>=74"]
 
 [tool.hatch.build.targets.wheel]
@@ -19,3 +20,8 @@ artifacts = [
 
 [tool.hatch.build.targets.wheel.hooks.custom]
 path = "hatch_build.py"
+
+[tool.cibuildwheel]
+build-frontend = { name = "uv", args = ["--verbose"] }
+build = "cp312-*"
+skip = "*-win32 *-manylinux_i686 *-musllinux_i686"

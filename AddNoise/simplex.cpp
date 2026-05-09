@@ -1,4 +1,5 @@
 #include "simplex.h"
+#include <stdint.h>
 
 // https://github.com/SRombauts/SimplexNoise/blob/master/src/SimplexNoise.cpp
 float simplex(float px, float py, float xsize, float ysize, int p[PERM_SIZE]) {
