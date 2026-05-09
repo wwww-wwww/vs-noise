@@ -2,9 +2,11 @@ name: Build
 
 on:
   push:
-    branches: [master]
-    tags: ["*"]
+    branches:
+      - workflow
   pull_request:
+  release:
+    types: published
   workflow_dispatch:
 
 jobs:
