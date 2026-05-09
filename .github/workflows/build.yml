@@ -33,7 +33,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runner: [ubuntu-24.04]
+        runner: [ubuntu-24.04, ubuntu-24.04-arm, windows-latest, macos-26, macos-26-intel]
     steps:
       - name: Checkout code
         uses: actions/checkout@v6.0.2
