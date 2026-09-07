@@ -514,7 +514,7 @@ static void VS_CC addnoise_create(const VSMap *in, VSMap *out,
       d->scale = static_cast<float>(1 << (d->vi->format.bitsPerSample - 8));
       d->peak = (1 << d->vi->format.bitsPerSample) - 1;
     } else {
-      d->scale = 1.0f / (d->vi->format.colorFamily == cfRGB ? 255.0f : 219.0f);
+      d->scale = 1.0f / 255.0f;
     }
 
     if (d->idum < 0) {
